@@ -1,0 +1,13 @@
+services:
+  cluster-simulator:
+    build:
+      context: .
+    environment:
+      APP_PORT: "8080"
+      LOG_LEVEL: info
+      TICK_DURATION_MS: "500"
+      DEFAULT_SCHEDULER: least-loaded
+      RANDOM_SEED: "42"
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

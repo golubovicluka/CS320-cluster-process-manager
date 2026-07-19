@@ -1,0 +1,14 @@
+.git
+.github
+.gitignore
+.DS_Store
+.env
+.env.*
+!.env.example
+bin
+coverage.out
+reports
+prd.md
+RTK.md
+*.prof
+*.test
