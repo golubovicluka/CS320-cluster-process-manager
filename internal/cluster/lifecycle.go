@@ -132,6 +132,9 @@ func (c *Controller) Step() error {
 		c.emitLocked(domain.EventSimulationStarted, "info", "", "", "simulation started")
 	}
 	c.state.CurrentTick++
+	if err := c.applyScheduledLocked(); err != nil {
+		return err
+	}
 	c.detectMissedHeartbeatsLocked()
 	c.scheduleReadyLocked()
 	c.sampleUtilizationLocked()
@@ -295,6 +298,9 @@ func (c *Controller) sampleUtilizationLocked() {
 }
 
 func (c *Controller) allProcessesTerminalLocked() bool {
+	if len(c.pendingProcesses) > 0 {
+		return false
+	}
 	for _, process := range c.state.Processes {
 		if !process.State.IsTerminal() {
 			return false

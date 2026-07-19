@@ -36,6 +36,8 @@ type Controller struct {
 	heartbeatTimeoutTicks int64
 	maxNodes              int
 	maxProcesses          int
+	pendingProcesses      map[int64][]domain.ProcessDefinition
+	scheduledFailures     map[int64][]domain.FailureDefinition
 }
 
 func New(config Config) (*Controller, error) {
@@ -63,6 +65,8 @@ func New(config Config) (*Controller, error) {
 		heartbeatTimeoutTicks: config.HeartbeatTimeoutTicks,
 		maxNodes:              config.MaxNodes,
 		maxProcesses:          config.MaxProcesses,
+		pendingProcesses:      make(map[int64][]domain.ProcessDefinition),
+		scheduledFailures:     make(map[int64][]domain.FailureDefinition),
 	}, nil
 }
 
@@ -178,7 +182,20 @@ func (c *Controller) Reset() {
 	c.state = domain.NewCluster(c.scheduler.Name(), c.state.Seed)
 	c.events = c.events[:0]
 	c.eventSequence = 0
+	c.pendingProcesses = make(map[int64][]domain.ProcessDefinition)
+	c.scheduledFailures = make(map[int64][]domain.FailureDefinition)
 	c.emitLocked(domain.EventSimulationReset, "info", "", "", "simulation reset")
+}
+
+func (c *Controller) Finish(reason string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.state.SimulationStatus == domain.SimulationCompleted {
+		return
+	}
+	c.state.SimulationStatus = domain.SimulationCompleted
+	c.state.FinishReason = reason
+	c.emitLocked(domain.EventSimulationFinished, "info", "", "", reason)
 }
 
 func (c *Controller) emitLocked(eventType domain.EventType, severity, processID, nodeID, message string) {
