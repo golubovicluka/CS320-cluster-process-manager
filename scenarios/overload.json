@@ -1,0 +1,21 @@
+{
+  "name": "overloaded-cluster",
+  "seed": 42,
+  "scheduler": "least-loaded",
+  "tickDurationMs": 100,
+  "maxTicks": 150,
+  "nodes": [
+    {"id": "small-1", "name": "Small Worker 1", "cpuCapacity": 2, "memoryCapacityMB": 1024},
+    {"id": "small-2", "name": "Small Worker 2", "cpuCapacity": 2, "memoryCapacityMB": 1024}
+  ],
+  "processes": [
+    {"id": "p01", "name": "batch-01", "priority": 1, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 12, "timeQuantum": 3, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p02", "name": "batch-02", "priority": 1, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 15, "timeQuantum": 3, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p03", "name": "batch-03", "priority": 1, "cpuRequest": 2, "memoryRequestMB": 768, "totalTicks": 10, "timeQuantum": 3, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p04", "name": "batch-04", "priority": 1, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 20, "timeQuantum": 3, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p05", "name": "batch-05", "priority": 1, "cpuRequest": 2, "memoryRequestMB": 768, "totalTicks": 11, "timeQuantum": 3, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p06", "name": "batch-06", "priority": 1, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 14, "timeQuantum": 3, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p07", "name": "batch-07", "priority": 1, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 18, "timeQuantum": 3, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p08", "name": "batch-08", "priority": 1, "cpuRequest": 2, "memoryRequestMB": 768, "totalTicks": 9, "timeQuantum": 3, "restartPolicy": "NEVER", "maxRestarts": 0}
+  ]
+}
