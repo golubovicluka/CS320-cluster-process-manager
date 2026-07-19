@@ -14,9 +14,10 @@ type Engine struct {
 	controller   *cluster.Controller
 	tickDuration time.Duration
 
-	mu     sync.Mutex
-	cancel context.CancelFunc
-	done   chan struct{}
+	controlMu sync.Mutex
+	mu        sync.Mutex
+	cancel    context.CancelFunc
+	done      chan struct{}
 }
 
 func New(controller *cluster.Controller, tickDuration time.Duration) (*Engine, error) {
@@ -30,6 +31,11 @@ func New(controller *cluster.Controller, tickDuration time.Duration) (*Engine, e
 }
 
 func (e *Engine) Start(parent context.Context) error {
+	if parent == nil {
+		return fmt.Errorf("%w: context cannot be nil", domain.ErrInvalidInput)
+	}
+	e.controlMu.Lock()
+	defer e.controlMu.Unlock()
 	e.mu.Lock()
 	if e.cancel != nil {
 		e.mu.Unlock()
@@ -74,11 +80,15 @@ func (e *Engine) loop(ctx context.Context, done chan struct{}) {
 }
 
 func (e *Engine) Pause() {
+	e.controlMu.Lock()
+	defer e.controlMu.Unlock()
 	e.stopRealtime()
 	e.controller.PauseSimulation()
 }
 
 func (e *Engine) Close() {
+	e.controlMu.Lock()
+	defer e.controlMu.Unlock()
 	e.stopRealtime()
 }
 
@@ -86,10 +96,6 @@ func (e *Engine) stopRealtime() {
 	e.mu.Lock()
 	cancel := e.cancel
 	done := e.done
-	if cancel != nil {
-		e.cancel = nil
-		e.done = nil
-	}
 	e.mu.Unlock()
 	if cancel == nil {
 		return
@@ -99,10 +105,35 @@ func (e *Engine) stopRealtime() {
 }
 
 func (e *Engine) RunSteps(ticks int) error {
+	e.controlMu.Lock()
+	defer e.controlMu.Unlock()
+	e.stopRealtime()
 	return e.controller.Steps(ticks)
 }
 
+func (e *Engine) LoadScenario(scenario domain.Scenario) error {
+	e.controlMu.Lock()
+	defer e.controlMu.Unlock()
+	if err := e.controller.ValidateScenario(scenario); err != nil {
+		return err
+	}
+	e.stopRealtime()
+	return e.controller.LoadScenario(scenario)
+}
+
+func (e *Engine) Reset() {
+	e.controlMu.Lock()
+	defer e.controlMu.Unlock()
+	e.stopRealtime()
+	e.controller.Reset()
+}
+
 func (e *Engine) RunScenario(scenario domain.Scenario) (*domain.Cluster, error) {
+	e.controlMu.Lock()
+	defer e.controlMu.Unlock()
+	if err := e.controller.ValidateScenario(scenario); err != nil {
+		return nil, err
+	}
 	e.stopRealtime()
 	if err := e.controller.LoadScenario(scenario); err != nil {
 		return nil, err

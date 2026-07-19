@@ -52,6 +52,22 @@ func TestRestartNeverLeavesProcessFailed(t *testing.T) {
 	}
 }
 
+func TestProcessDoesNotExceedMaxRestarts(t *testing.T) {
+	controller := newTestController(t, scheduler.RoundRobinName)
+	addTestNode(t, controller, "n1", 1)
+	submitTestProcess(t, controller, "p1", 5, domain.RestartOnFailure, 1)
+	if _, err := controller.FailProcess("p1", "first failure"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := controller.FailProcess("p1", "second failure"); err != nil {
+		t.Fatal(err)
+	}
+	process, _ := controller.Process("p1")
+	if process.RestartCount != 1 || process.State != domain.ProcessFailed {
+		t.Fatalf("restart limit was not enforced: %+v", process)
+	}
+}
+
 func TestHeartbeatTimeoutFailsNode(t *testing.T) {
 	controller, err := New(Config{Scheduler: scheduler.RoundRobinName, HeartbeatTimeoutTicks: 1})
 	if err != nil {

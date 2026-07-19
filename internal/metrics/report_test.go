@@ -17,7 +17,7 @@ func TestBuildReport(t *testing.T) {
 	cluster.CurrentTick = 10
 	cluster.FinishReason = "done"
 	cluster.Statistics = domain.Statistics{
-		CPUUtilizationSum: 3, MemoryUtilizationSum: 2, UtilizationSamples: 10,
+		CPUUtilizationSum: 3, MemoryUtilizationSum: 2, LoadBalanceStdDevSum: 1, UtilizationSamples: 10,
 		SchedulingDeferred: 4, NodeFailures: 1, Reschedulings: 1,
 	}
 	cluster.Nodes["n1"] = &domain.Node{ID: "n1", CPUCapacity: 4, MemoryCapacityMB: 100, CPUAllocated: 2, MemoryAllocatedMB: 25}
@@ -30,7 +30,7 @@ func TestBuildReport(t *testing.T) {
 	if report.TerminatedProcesses != 1 || report.Restarts != 1 || report.AverageWaitingTicks != 2 || report.AverageTurnaroundTicks != 7 {
 		t.Fatalf("unexpected process metrics: %+v", report)
 	}
-	if report.ThroughputPerTick != 0.1 || report.SuccessRate != 1 || report.AverageCPUUtilization != 0.3 || report.CurrentCPUUtilization != 0.5 {
+	if report.ThroughputPerTick != 0.1 || report.SuccessRate != 1 || report.AverageCPUUtilization != 0.3 || report.CurrentCPUUtilization != 0.5 || report.LoadBalanceStdDev != 0.1 {
 		t.Fatalf("unexpected aggregate metrics: %+v", report)
 	}
 }

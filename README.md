@@ -7,7 +7,7 @@ A deterministic Go simulator for process scheduling and failure recovery in a cl
 - process states from `NEW` through `READY`, `RUNNING`, paused/failure states, and terminal states;
 - resource-safe Round Robin, Least Loaded, and Priority-Aware scheduling;
 - deterministic tick execution plus an optional real-time loop;
-- process pause, resume, kill, bounded restart, and rescheduling;
+- process pause, resume, simulated I/O wait/wake, kill, bounded restart, and rescheduling;
 - node draining, offline, failure, heartbeat timeout, and recovery states;
 - thread-safe controller with invariant checks and race-tested concurrent access;
 - REST API, `clusterctl` client, and standalone scenario runner;

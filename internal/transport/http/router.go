@@ -48,6 +48,8 @@ func (a *API) routes() {
 	a.mux.HandleFunc("GET /api/v1/processes/{id}", a.getProcess)
 	a.mux.HandleFunc("POST /api/v1/processes/{id}/pause", a.pauseProcess)
 	a.mux.HandleFunc("POST /api/v1/processes/{id}/resume", a.resumeProcess)
+	a.mux.HandleFunc("POST /api/v1/processes/{id}/wait", a.waitProcess)
+	a.mux.HandleFunc("POST /api/v1/processes/{id}/wake", a.wakeProcess)
 	a.mux.HandleFunc("POST /api/v1/processes/{id}/kill", a.killProcess)
 	a.mux.HandleFunc("POST /api/v1/processes/{id}/fail", a.failProcess)
 

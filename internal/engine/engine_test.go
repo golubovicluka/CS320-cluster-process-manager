@@ -84,3 +84,18 @@ func TestRealtimeEngineStopsOnCompletion(t *testing.T) {
 	}
 	current.Close()
 }
+
+func TestInvalidScenarioDoesNotStopRealtimeEngine(t *testing.T) {
+	_, current := newEngine(t, time.Hour)
+	if err := current.Start(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	invalid := domain.Scenario{Name: "invalid", Scheduler: scheduler.RoundRobinName, MaxTicks: 2}
+	if err := current.LoadScenario(invalid); err == nil {
+		t.Fatal("expected invalid scenario")
+	}
+	if err := current.Start(context.Background()); err == nil {
+		t.Fatal("invalid load stopped the running engine")
+	}
+	current.Close()
+}

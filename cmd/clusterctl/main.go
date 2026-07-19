@@ -135,7 +135,7 @@ func (c *client) process(action string, args []string) error {
 		}, "")
 	case "list":
 		return c.request(http.MethodGet, "/api/v1/processes", nil, "")
-	case "pause", "resume", "kill", "fail":
+	case "pause", "resume", "wait", "wake", "kill", "fail":
 		id, err := requiredArgument(args, "process id")
 		if err != nil {
 			return err

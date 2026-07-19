@@ -10,15 +10,15 @@ The full machine-readable rows are in [`results/summary.csv`](results/summary.cs
 
 ## Results
 
-| Workload | Scheduler | Ticks | Avg wait | Max wait | Throughput | Avg CPU | Deferrals | Restarts | Success |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Balanced | Round Robin | 9 | 1.00 | 1 | 1.333 | 52.22% | 0 | 0 | 100% |
-| Balanced | Least Loaded | 9 | 1.00 | 1 | 1.333 | 52.22% | 0 | 0 | 100% |
-| Heterogeneous | Round Robin | 22 | 3.00 | 13 | 0.273 | 49.68% | 12 | 0 | 100% |
-| Heterogeneous | Least Loaded | 22 | 3.00 | 13 | 0.273 | 49.68% | 12 | 0 | 100% |
-| Overload | Least Loaded | 39 | 11.25 | 31 | 0.205 | 89.10% | 82 | 0 | 100% |
-| Priority | Priority-Aware | 14 | 3.43 | 11 | 0.500 | 75.00% | 18 | 0 | 100% |
-| Node failure | Least Loaded | 16 | 1.80 | 5 | 0.313 | 54.17% | 4 | 2 | 100% |
+| Workload | Scheduler | Ticks | Avg wait | Max wait | Throughput | Avg CPU | Load σ | Deferrals | Restarts | Success |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Balanced | Round Robin | 9 | 1.00 | 1 | 1.333 | 52.22% | 0.1393 | 0 | 0 | 100% |
+| Balanced | Least Loaded | 9 | 1.00 | 1 | 1.333 | 52.22% | 0.0987 | 0 | 0 | 100% |
+| Heterogeneous | Round Robin | 22 | 3.00 | 13 | 0.273 | 49.68% | 0.2417 | 12 | 0 | 100% |
+| Heterogeneous | Least Loaded | 22 | 3.00 | 13 | 0.273 | 49.68% | 0.2452 | 12 | 0 | 100% |
+| Overload | Least Loaded | 39 | 11.25 | 31 | 0.205 | 89.10% | 0.0962 | 82 | 0 | 100% |
+| Priority | Priority-Aware | 14 | 3.43 | 11 | 0.500 | 75.00% | 0.0469 | 18 | 0 | 100% |
+| Node failure | Least Loaded | 16 | 1.80 | 5 | 0.313 | 54.17% | 0.2368 | 4 | 2 | 100% |
 
 ```mermaid
 xychart-beta
@@ -38,9 +38,9 @@ xychart-beta
 
 ## Interpretation
 
-The homogeneous balanced workload is intentionally a control case. Every node has equal capacity and all processes arrive together, so Round Robin and Least Loaded make equivalently effective decisions. Matching output confirms deterministic replay and gives a neutral baseline rather than manufacturing an algorithm advantage.
+The homogeneous balanced workload is intentionally a control case. Both schedulers finish in nine ticks with identical waiting time and throughput, but Least Loaded lowers the average cross-node load standard deviation from `0.1393` to `0.0987` (about 29%). This shows its balancing effect even when completion time is unchanged.
 
-The heterogeneous fixture also finishes identically for this fixed process order. Capacity checks prevent either scheduler from placing the largest jobs on undersized nodes; this demonstrates that the admission constraint dominates the placement heuristic in that workload. New workload distributions can be compared without changing implementation by passing `-scheduler` to the scenario runner.
+The heterogeneous fixture also finishes identically for this fixed process order. Capacity checks prevent either scheduler from placing the largest jobs on undersized nodes; the very similar load deviation shows that admission constraints dominate the placement heuristic in this workload. New distributions can be compared without changing implementation by passing `-scheduler` to the runner.
 
 Overload produces the expected cost: CPU remains busy for 89.10% of sampled ticks, but 82 scheduling attempts are deferred and average waiting rises to 11.25 ticks. No resources are overcommitted; queued work progresses as prior processes finish.
 

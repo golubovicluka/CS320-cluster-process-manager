@@ -1,10 +1,6 @@
 package metrics
 
-import (
-	"math"
-
-	"github.com/golubovicluka/CS320-PZ/internal/domain"
-)
+import "github.com/golubovicluka/CS320-PZ/internal/domain"
 
 type Report struct {
 	ScenarioName             string  `json:"scenarioName"`
@@ -100,9 +96,9 @@ func Build(cluster *domain.Cluster) Report {
 	if cluster.Statistics.UtilizationSamples > 0 {
 		report.AverageCPUUtilization = cluster.Statistics.CPUUtilizationSum / float64(cluster.Statistics.UtilizationSamples)
 		report.AverageMemoryUtilization = cluster.Statistics.MemoryUtilizationSum / float64(cluster.Statistics.UtilizationSamples)
+		report.LoadBalanceStdDev = cluster.Statistics.LoadBalanceStdDevSum / float64(cluster.Statistics.UtilizationSamples)
 	}
 	report.CurrentCPUUtilization, report.CurrentMemoryUtilization = currentUtilization(cluster)
-	report.LoadBalanceStdDev = loadBalanceStdDev(cluster)
 	return report
 }
 
@@ -123,25 +119,4 @@ func currentUtilization(cluster *domain.Cluster) (float64, float64) {
 		memory = float64(allocatedMemory) / float64(totalMemory)
 	}
 	return cpu, memory
-}
-
-func loadBalanceStdDev(cluster *domain.Cluster) float64 {
-	if len(cluster.Nodes) == 0 {
-		return 0
-	}
-	loads := make([]float64, 0, len(cluster.Nodes))
-	var sum float64
-	for _, node := range cluster.Nodes {
-		load := 0.5*float64(node.CPUAllocated)/float64(node.CPUCapacity) +
-			0.5*float64(node.MemoryAllocatedMB)/float64(node.MemoryCapacityMB)
-		loads = append(loads, load)
-		sum += load
-	}
-	mean := sum / float64(len(loads))
-	var squaredDifference float64
-	for _, load := range loads {
-		difference := load - mean
-		squaredDifference += difference * difference
-	}
-	return math.Sqrt(squaredDifference / float64(len(loads)))
 }

@@ -32,6 +32,8 @@ curl -X POST http://localhost:8080/api/v1/nodes \
 | `GET` | `/processes/{id}` | Get one process |
 | `POST` | `/processes/{id}/pause` | Pause a running process and release resources |
 | `POST` | `/processes/{id}/resume` | Return a paused process to `READY` |
+| `POST` | `/processes/{id}/wait` | Move a running process to simulated I/O waiting |
+| `POST` | `/processes/{id}/wake` | Complete simulated I/O and return to `READY` |
 | `POST` | `/processes/{id}/kill` | Kill a non-terminal process |
 | `POST` | `/processes/{id}/fail` | Inject a process failure |
 

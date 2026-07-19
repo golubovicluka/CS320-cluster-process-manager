@@ -3,6 +3,8 @@ package cluster
 import (
 	"errors"
 	"fmt"
+	"math"
+	"slices"
 	"sort"
 
 	"github.com/golubovicluka/CS320-PZ/internal/domain"
@@ -97,6 +99,44 @@ func (c *Controller) ResumeProcess(id string) (*domain.Process, error) {
 	return process.Clone(), nil
 }
 
+func (c *Controller) WaitProcess(id string) (*domain.Process, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	process, err := c.processLocked(id)
+	if err != nil {
+		return nil, err
+	}
+	if process.State != domain.ProcessRunning {
+		return nil, fmt.Errorf("%w: only a running process can enter waiting", domain.ErrInvalidStateTransition)
+	}
+	if err := c.releaseLocked(process); err != nil {
+		return nil, err
+	}
+	if err := process.Transition(domain.ProcessWaiting); err != nil {
+		return nil, err
+	}
+	c.emitLocked(domain.EventProcessWaiting, "info", process.ID, "", "process is waiting for simulated I/O")
+	return process.Clone(), nil
+}
+
+func (c *Controller) WakeProcess(id string) (*domain.Process, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	process, err := c.processLocked(id)
+	if err != nil {
+		return nil, err
+	}
+	if process.State != domain.ProcessWaiting {
+		return nil, fmt.Errorf("%w: only a waiting process can complete I/O", domain.ErrInvalidStateTransition)
+	}
+	if err := process.Transition(domain.ProcessReady); err != nil {
+		return nil, err
+	}
+	process.LastReadyAtTick = c.state.CurrentTick
+	c.emitLocked(domain.EventProcessIOCompleted, "info", process.ID, "", "simulated I/O completed")
+	return process.Clone(), nil
+}
+
 func (c *Controller) KillProcess(id string) (*domain.Process, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -127,12 +167,25 @@ func (c *Controller) Step() error {
 	if c.state.SimulationStatus == domain.SimulationCompleted {
 		return fmt.Errorf("%w: simulation has completed", domain.ErrInvalidStateTransition)
 	}
+	previousState := c.state.Clone()
+	previousEvents := slices.Clone(c.events)
+	previousSequence := c.eventSequence
+	previousPending := clonePending(c.pendingProcesses)
+	previousFailures := cloneFailures(c.scheduledFailures)
+	rollback := func() {
+		c.state = previousState
+		c.events = previousEvents
+		c.eventSequence = previousSequence
+		c.pendingProcesses = previousPending
+		c.scheduledFailures = previousFailures
+	}
 	if c.state.SimulationStatus != domain.SimulationRunning {
 		c.state.SimulationStatus = domain.SimulationRunning
 		c.emitLocked(domain.EventSimulationStarted, "info", "", "", "simulation started")
 	}
 	c.state.CurrentTick++
 	if err := c.applyScheduledLocked(); err != nil {
+		rollback()
 		return err
 	}
 	c.detectMissedHeartbeatsLocked()
@@ -140,11 +193,17 @@ func (c *Controller) Step() error {
 	c.sampleUtilizationLocked()
 	c.executeRunningLocked()
 	if len(c.state.Processes) > 0 && c.allProcessesTerminalLocked() {
-		c.state.SimulationStatus = domain.SimulationCompleted
-		c.state.FinishReason = "all processes reached a terminal state"
-		c.emitLocked(domain.EventSimulationFinished, "info", "", "", c.state.FinishReason)
+		c.finishLocked("all processes reached a terminal state")
+	} else if c.state.MaxTicks > 0 && c.state.CurrentTick >= c.state.MaxTicks {
+		c.finishLocked("maximum tick count reached")
+	} else if c.noProgressPossibleLocked() {
+		c.finishLocked("no progress is possible with available node capacities")
 	}
-	return c.validateInvariantsLocked()
+	if err := c.validateInvariantsLocked(); err != nil {
+		rollback()
+		return err
+	}
+	return nil
 }
 
 func (c *Controller) Steps(count int) error {
@@ -282,17 +341,33 @@ func (c *Controller) sampleUtilizationLocked() {
 	allocatedCPU := 0
 	totalMemory := 0
 	allocatedMemory := 0
+	loads := make([]float64, 0, len(c.state.Nodes))
 	for _, node := range c.state.Nodes {
 		totalCPU += node.CPUCapacity
 		allocatedCPU += node.CPUAllocated
 		totalMemory += node.MemoryCapacityMB
 		allocatedMemory += node.MemoryAllocatedMB
+		loads = append(loads, 0.5*float64(node.CPUAllocated)/float64(node.CPUCapacity)+
+			0.5*float64(node.MemoryAllocatedMB)/float64(node.MemoryCapacityMB))
 	}
 	if totalCPU > 0 {
 		c.state.Statistics.CPUUtilizationSum += float64(allocatedCPU) / float64(totalCPU)
 	}
 	if totalMemory > 0 {
 		c.state.Statistics.MemoryUtilizationSum += float64(allocatedMemory) / float64(totalMemory)
+	}
+	if len(loads) > 0 {
+		var sum float64
+		for _, load := range loads {
+			sum += load
+		}
+		mean := sum / float64(len(loads))
+		var squaredDifference float64
+		for _, load := range loads {
+			difference := load - mean
+			squaredDifference += difference * difference
+		}
+		c.state.Statistics.LoadBalanceStdDevSum += math.Sqrt(squaredDifference / float64(len(loads)))
 	}
 	c.state.Statistics.UtilizationSamples++
 }
@@ -307,4 +382,48 @@ func (c *Controller) allProcessesTerminalLocked() bool {
 		}
 	}
 	return true
+}
+
+func (c *Controller) noProgressPossibleLocked() bool {
+	if len(c.pendingProcesses) > 0 {
+		return false
+	}
+	ready := 0
+	for _, process := range c.state.Processes {
+		if process.State == domain.ProcessRunning {
+			return false
+		}
+		if process.State != domain.ProcessReady {
+			continue
+		}
+		ready++
+		for _, node := range c.state.Nodes {
+			if node.CPUCapacity >= process.CPURequest && node.MemoryCapacityMB >= process.MemoryRequestMB {
+				return false
+			}
+		}
+	}
+	return ready > 0
+}
+
+func (c *Controller) finishLocked(reason string) {
+	c.state.SimulationStatus = domain.SimulationCompleted
+	c.state.FinishReason = reason
+	c.emitLocked(domain.EventSimulationFinished, "info", "", "", reason)
+}
+
+func clonePending(source map[int64][]domain.ProcessDefinition) map[int64][]domain.ProcessDefinition {
+	clone := make(map[int64][]domain.ProcessDefinition, len(source))
+	for tick, definitions := range source {
+		clone[tick] = slices.Clone(definitions)
+	}
+	return clone
+}
+
+func cloneFailures(source map[int64][]domain.FailureDefinition) map[int64][]domain.FailureDefinition {
+	clone := make(map[int64][]domain.FailureDefinition, len(source))
+	for tick, definitions := range source {
+		clone[tick] = slices.Clone(definitions)
+	}
+	return clone
 }

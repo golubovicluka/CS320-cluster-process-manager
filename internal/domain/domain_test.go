@@ -69,6 +69,31 @@ func TestNodeAllocationAndRelease(t *testing.T) {
 	}
 }
 
+func TestNewNodeValidation(t *testing.T) {
+	tests := []NodeDefinition{
+		{Name: "missing-id", CPUCapacity: 1, MemoryCapacityMB: 1},
+		{ID: "n1", Name: "zero-cpu", MemoryCapacityMB: 1},
+		{ID: "n1", Name: "zero-memory", CPUCapacity: 1},
+	}
+	for _, definition := range tests {
+		if _, err := NewNode(definition, 0); !errors.Is(err, ErrInvalidInput) {
+			t.Fatalf("expected invalid node input for %+v, got %v", definition, err)
+		}
+	}
+}
+
+func TestScenarioRejectsFailureBeforeSubmission(t *testing.T) {
+	scenario := Scenario{
+		Name: "invalid", Scheduler: "round-robin", MaxTicks: 10,
+		Nodes:     []NodeDefinition{{ID: "n1", Name: "node", CPUCapacity: 1, MemoryCapacityMB: 1}},
+		Processes: []ProcessDefinition{{ID: "p1", Name: "job", CPURequest: 1, MemoryRequestMB: 1, TotalTicks: 1, SubmitAtTick: 5}},
+		Failures:  []FailureDefinition{{Tick: 2, Type: FailureProcess, ProcessID: "p1"}},
+	}
+	if err := scenario.Validate(); !errors.Is(err, ErrInvalidInput) {
+		t.Fatalf("expected invalid scenario, got %v", err)
+	}
+}
+
 func TestClusterCloneDoesNotShareMutableState(t *testing.T) {
 	cluster := NewCluster("round-robin", 42)
 	node, _ := NewNode(NodeDefinition{ID: "n1", Name: "worker", CPUCapacity: 1, MemoryCapacityMB: 64}, 0)

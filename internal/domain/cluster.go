@@ -3,6 +3,7 @@ package domain
 type Statistics struct {
 	CPUUtilizationSum    float64 `json:"cpuUtilizationSum"`
 	MemoryUtilizationSum float64 `json:"memoryUtilizationSum"`
+	LoadBalanceStdDevSum float64 `json:"loadBalanceStdDevSum"`
 	UtilizationSamples   int64   `json:"utilizationSamples"`
 	SchedulingDeferred   int64   `json:"schedulingDeferred"`
 	NodeFailures         int64   `json:"nodeFailures"`
@@ -18,6 +19,7 @@ type Cluster struct {
 	ScenarioName     string              `json:"scenarioName,omitempty"`
 	Seed             int64               `json:"seed"`
 	FinishReason     string              `json:"finishReason,omitempty"`
+	MaxTicks         int64               `json:"maxTicks,omitempty"`
 	Statistics       Statistics          `json:"statistics"`
 }
 

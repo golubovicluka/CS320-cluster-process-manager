@@ -40,8 +40,7 @@ func (a *API) stepSimulation(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) resetSimulation(w http.ResponseWriter, _ *http.Request) {
-	a.engine.Pause()
-	a.controller.Reset()
+	a.engine.Reset()
 	writeJSON(w, http.StatusOK, a.controller.Snapshot())
 }
 
@@ -55,8 +54,7 @@ func (a *API) loadScenario(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
-	a.engine.Pause()
-	if err := a.controller.LoadScenario(scenario); err != nil {
+	if err := a.engine.LoadScenario(scenario); err != nil {
 		writeError(w, err)
 		return
 	}

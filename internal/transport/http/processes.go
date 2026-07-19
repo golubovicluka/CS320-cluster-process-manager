@@ -41,6 +41,14 @@ func (a *API) resumeProcess(w http.ResponseWriter, r *http.Request) {
 	a.processAction(w, r, a.controller.ResumeProcess)
 }
 
+func (a *API) waitProcess(w http.ResponseWriter, r *http.Request) {
+	a.processAction(w, r, a.controller.WaitProcess)
+}
+
+func (a *API) wakeProcess(w http.ResponseWriter, r *http.Request) {
+	a.processAction(w, r, a.controller.WakeProcess)
+}
+
 func (a *API) killProcess(w http.ResponseWriter, r *http.Request) {
 	a.processAction(w, r, a.controller.KillProcess)
 }

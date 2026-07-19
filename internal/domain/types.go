@@ -59,6 +59,8 @@ const (
 	EventProcessPreempted    EventType = "PROCESS_PREEMPTED"
 	EventProcessPaused       EventType = "PROCESS_PAUSED"
 	EventProcessResumed      EventType = "PROCESS_RESUMED"
+	EventProcessWaiting      EventType = "PROCESS_WAITING"
+	EventProcessIOCompleted  EventType = "PROCESS_IO_COMPLETED"
 	EventProcessCompleted    EventType = "PROCESS_COMPLETED"
 	EventProcessFailed       EventType = "PROCESS_FAILED"
 	EventProcessRestarted    EventType = "PROCESS_RESTARTED"

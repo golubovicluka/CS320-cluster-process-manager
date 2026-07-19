@@ -13,10 +13,10 @@ vet:
 	go vet ./...
 
 fmt:
-	gofmt -w $$(rg --files cmd internal -g '*.go')
+	gofmt -w $$(find cmd internal -name '*.go' -type f)
 
 fmt-check:
-	test -z "$$(gofmt -l $$(rg --files cmd internal -g '*.go'))"
+	test -z "$$(gofmt -l $$(find cmd internal -name '*.go' -type f))"
 
 run:
 	go run ./cmd/server

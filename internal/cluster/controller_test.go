@@ -2,8 +2,10 @@ package cluster
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/golubovicluka/CS320-PZ/internal/domain"
 	"github.com/golubovicluka/CS320-PZ/internal/scheduler"
@@ -123,6 +125,33 @@ func TestPauseResumeAndKill(t *testing.T) {
 	}
 }
 
+func TestWaitAndWakeProcess(t *testing.T) {
+	controller := newTestController(t, scheduler.RoundRobinName)
+	addTestNode(t, controller, "n1", 1)
+	submitTestProcess(t, controller, "p1", 3, domain.RestartNever, 0)
+	if err := controller.Step(); err != nil {
+		t.Fatal(err)
+	}
+	waiting, err := controller.WaitProcess("p1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if waiting.State != domain.ProcessWaiting || waiting.NodeID != "" {
+		t.Fatalf("unexpected waiting process: %+v", waiting)
+	}
+	node, _ := controller.Node("n1")
+	if node.CPUAllocated != 0 {
+		t.Fatal("waiting process retained resources")
+	}
+	ready, err := controller.WakeProcess("p1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ready.State != domain.ProcessReady {
+		t.Fatalf("got %s, want READY", ready.State)
+	}
+}
+
 func TestConcurrentSubmissionsAreSafe(t *testing.T) {
 	controller := newTestController(t, scheduler.RoundRobinName)
 	var wait sync.WaitGroup
@@ -137,5 +166,28 @@ func TestConcurrentSubmissionsAreSafe(t *testing.T) {
 	wait.Wait()
 	if got := len(controller.Processes()); got != 100 {
 		t.Fatalf("got %d processes, want 100", got)
+	}
+}
+
+func TestReferenceWorkloadCompletesWithinFiveSeconds(t *testing.T) {
+	controller := newTestController(t, scheduler.LeastLoadedName)
+	for index := range 20 {
+		id := fmt.Sprintf("node-%02d", index)
+		if _, err := controller.RegisterNode(domain.NodeDefinition{ID: id, Name: id, CPUCapacity: 50, MemoryCapacityMB: 6_400}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for index := range 1_000 {
+		submitTestProcess(t, controller, fmt.Sprintf("process-%04d", index), 2, domain.RestartNever, 0)
+	}
+	started := time.Now()
+	if err := controller.Steps(2); err != nil {
+		t.Fatal(err)
+	}
+	if elapsed := time.Since(started); elapsed >= 5*time.Second {
+		t.Fatalf("reference workload took %s, want less than 5s", elapsed)
+	}
+	if controller.Snapshot().SimulationStatus != domain.SimulationCompleted {
+		t.Fatal("reference workload did not complete")
 	}
 }
