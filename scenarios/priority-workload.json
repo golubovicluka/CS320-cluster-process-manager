@@ -9,12 +9,12 @@
     {"id": "node-2", "name": "Priority Worker 2", "cpuCapacity": 2, "memoryCapacityMB": 2048}
   ],
   "processes": [
-    {"id": "low-1", "name": "archive", "priority": 1, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 10, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "low-2", "name": "cleanup", "priority": 1, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 8, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "normal-1", "name": "analytics", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 7, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "normal-2", "name": "indexer", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 6, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "high-1", "name": "payment", "priority": 10, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 4, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "high-2", "name": "alert", "priority": 10, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 3, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "urgent", "name": "incident", "priority": 20, "cpuRequest": 2, "memoryRequestMB": 512, "totalTicks": 2, "timeQuantum": 1, "restartPolicy": "NEVER", "maxRestarts": 0, "submitAtTick": 2}
+    {"id": "low-1", "name": "archive", "priority": 1, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 10, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "low-2", "name": "cleanup", "priority": 1, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 8, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "normal-1", "name": "analytics", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 7, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "normal-2", "name": "indexer", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 6, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "high-1", "name": "payment", "priority": 10, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 4, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "high-2", "name": "alert", "priority": 10, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 3, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "urgent", "name": "incident", "priority": 20, "cpuRequest": 2, "memoryRequestMB": 512, "totalTicks": 2, "restartPolicy": "NEVER", "maxRestarts": 0, "submitAtTick": 2}
   ]
 }
