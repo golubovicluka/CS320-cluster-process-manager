@@ -168,13 +168,13 @@ func (c *Controller) Step() error {
 		return fmt.Errorf("%w: simulation has completed", domain.ErrInvalidStateTransition)
 	}
 	previousState := c.state.Clone()
-	previousEvents := slices.Clone(c.events)
+	previousEventCount := len(c.events)
 	previousSequence := c.eventSequence
 	previousPending := clonePending(c.pendingProcesses)
 	previousFailures := cloneFailures(c.scheduledFailures)
 	rollback := func() {
 		c.state = previousState
-		c.events = previousEvents
+		c.events = c.events[:previousEventCount]
 		c.eventSequence = previousSequence
 		c.pendingProcesses = previousPending
 		c.scheduledFailures = previousFailures
@@ -196,8 +196,8 @@ func (c *Controller) Step() error {
 		c.finishLocked("all processes reached a terminal state")
 	} else if c.state.MaxTicks > 0 && c.state.CurrentTick >= c.state.MaxTicks {
 		c.finishLocked("maximum tick count reached")
-	} else if c.noProgressPossibleLocked() {
-		c.finishLocked("no progress is possible with available node capacities")
+	} else if reason := c.progressBlockReasonLocked(); reason != "" {
+		c.finishLocked(reason)
 	}
 	if err := c.validateInvariantsLocked(); err != nil {
 		rollback()
@@ -384,26 +384,35 @@ func (c *Controller) allProcessesTerminalLocked() bool {
 	return true
 }
 
-func (c *Controller) noProgressPossibleLocked() bool {
-	if len(c.pendingProcesses) > 0 {
-		return false
+func (c *Controller) progressBlockReasonLocked() string {
+	if len(c.pendingProcesses) > 0 || len(c.scheduledFailures) > 0 {
+		return ""
 	}
-	ready := 0
+	hasReady := false
+	hasExternallyBlocked := false
 	for _, process := range c.state.Processes {
 		if process.State == domain.ProcessRunning {
-			return false
+			return ""
 		}
-		if process.State != domain.ProcessReady {
-			continue
-		}
-		ready++
-		for _, node := range c.state.Nodes {
-			if node.CPUCapacity >= process.CPURequest && node.MemoryCapacityMB >= process.MemoryRequestMB {
-				return false
+		switch process.State {
+		case domain.ProcessReady:
+			hasReady = true
+			for _, node := range c.state.Nodes {
+				if node.Snapshot().CanFit(*process) {
+					return ""
+				}
 			}
+		case domain.ProcessWaiting, domain.ProcessPaused:
+			hasExternallyBlocked = true
 		}
 	}
-	return ready > 0
+	if hasReady {
+		return "NO_ONLINE_CAPACITY: no READY process fits an ONLINE node"
+	}
+	if hasExternallyBlocked {
+		return "EXTERNALLY_BLOCKED: WAITING or PAUSED processes require an external command"
+	}
+	return ""
 }
 
 func (c *Controller) finishLocked(reason string) {
