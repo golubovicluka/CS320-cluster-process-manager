@@ -14,7 +14,6 @@ type Process struct {
 	MemoryRequestMB int           `json:"memoryRequestMB"`
 	TotalTicks      int           `json:"totalTicks"`
 	RemainingTicks  int           `json:"remainingTicks"`
-	TimeQuantum     int           `json:"timeQuantum"`
 	NodeID          string        `json:"nodeId,omitempty"`
 	RestartPolicy   RestartPolicy `json:"restartPolicy"`
 	RestartCount    int           `json:"restartCount"`
@@ -34,7 +33,6 @@ type ProcessDefinition struct {
 	CPURequest      int           `json:"cpuRequest"`
 	MemoryRequestMB int           `json:"memoryRequestMB"`
 	TotalTicks      int           `json:"totalTicks"`
-	TimeQuantum     int           `json:"timeQuantum"`
 	RestartPolicy   RestartPolicy `json:"restartPolicy"`
 	MaxRestarts     int           `json:"maxRestarts"`
 	SubmitAtTick    int64         `json:"submitAtTick,omitempty"`
@@ -43,9 +41,6 @@ type ProcessDefinition struct {
 func NewProcess(def ProcessDefinition, tick int64) (*Process, error) {
 	if def.RestartPolicy == "" {
 		def.RestartPolicy = RestartNever
-	}
-	if def.TimeQuantum == 0 {
-		def.TimeQuantum = 1
 	}
 	p := &Process{
 		ID:              strings.TrimSpace(def.ID),
@@ -56,7 +51,6 @@ func NewProcess(def ProcessDefinition, tick int64) (*Process, error) {
 		MemoryRequestMB: def.MemoryRequestMB,
 		TotalTicks:      def.TotalTicks,
 		RemainingTicks:  def.TotalTicks,
-		TimeQuantum:     def.TimeQuantum,
 		RestartPolicy:   def.RestartPolicy,
 		MaxRestarts:     def.MaxRestarts,
 		SubmittedAtTick: tick,
@@ -84,14 +78,11 @@ func (p Process) Validate() error {
 	if p.TotalTicks <= 0 {
 		return fmt.Errorf("%w: total ticks must be positive", ErrInvalidInput)
 	}
-	if p.TimeQuantum <= 0 {
-		return fmt.Errorf("%w: time quantum must be positive", ErrInvalidInput)
-	}
 	if p.MaxRestarts < 0 {
 		return fmt.Errorf("%w: max restarts cannot be negative", ErrInvalidInput)
 	}
 	switch p.RestartPolicy {
-	case RestartNever, RestartOnFailure, RestartAlways:
+	case RestartNever, RestartOnFailure:
 	default:
 		return fmt.Errorf("%w: unsupported restart policy %q", ErrInvalidInput, p.RestartPolicy)
 	}
@@ -156,5 +147,5 @@ func (p Process) Clone() *Process {
 }
 
 func (p Process) CanRestart() bool {
-	return (p.RestartPolicy == RestartOnFailure || p.RestartPolicy == RestartAlways) && p.RestartCount < p.MaxRestarts
+	return p.RestartPolicy == RestartOnFailure && p.RestartCount < p.MaxRestarts
 }
