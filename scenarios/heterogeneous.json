@@ -10,11 +10,11 @@
     {"id": "large", "name": "Large Worker", "cpuCapacity": 8, "memoryCapacityMB": 8192}
   ],
   "processes": [
-    {"id": "tiny-1", "name": "tiny", "priority": 3, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 5, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "tiny-2", "name": "tiny", "priority": 3, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 6, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "medium-1", "name": "medium", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 1024, "totalTicks": 9, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "medium-2", "name": "medium", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 1536, "totalTicks": 8, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "large-1", "name": "large", "priority": 7, "cpuRequest": 4, "memoryRequestMB": 4096, "totalTicks": 12, "timeQuantum": 3, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "large-2", "name": "large", "priority": 7, "cpuRequest": 6, "memoryRequestMB": 4096, "totalTicks": 10, "timeQuantum": 3, "restartPolicy": "NEVER", "maxRestarts": 0}
+    {"id": "tiny-1", "name": "tiny", "priority": 3, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 5, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "tiny-2", "name": "tiny", "priority": 3, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 6, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "medium-1", "name": "medium", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 1024, "totalTicks": 9, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "medium-2", "name": "medium", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 1536, "totalTicks": 8, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "large-1", "name": "large", "priority": 7, "cpuRequest": 4, "memoryRequestMB": 4096, "totalTicks": 12, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "large-2", "name": "large", "priority": 7, "cpuRequest": 6, "memoryRequestMB": 4096, "totalTicks": 10, "restartPolicy": "NEVER", "maxRestarts": 0}
   ]
 }
