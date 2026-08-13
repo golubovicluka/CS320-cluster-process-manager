@@ -8,7 +8,7 @@
 - Student: Luka Golubović, indeks 6356
 - Implementacija: Go 1.26
 - Repozitorijum: <https://github.com/golubovicluka/CS320-cluster-process-manager>
-- Verzija izvornog koda: commit `7047212`
+- Identitet izvornog koda i rezultata: `docs/results/evidence-manifest.json`
 
 ## Šta je implementirano
 
@@ -71,7 +71,7 @@ go run ./cmd/clusterctl report show
 
 - formalna projektna dokumentacija u DOCX i PDF formatu;
 - izvorni kod aplikacije;
-- šest ponovljivih scenarija iz foldera `scenarios/`;
+- pet ponovljivih scenario fajlova i sedam referentnih pokretanja;
 - verzionisani eksperimentalni rezultati iz `docs/results/`;
 - tehnička dokumentacija REST API-ja, arhitekture i eksperimenata;
 - ovaj README sa komandama za proveru i demonstraciju.
@@ -80,5 +80,5 @@ go run ./cmd/clusterctl report show
 
 Simulator ne pokreće korisničke programe na udaljenim računarima. CPU i
 memorija su numerički resursi modela. Sistem nema distribuirani konsenzus,
-trajnu bazu ni autentifikaciju. Polje `timeQuantum` se validira i čuva u modelu,
-ali trenutna verzija ne vrši preempciju po vremenskom kvantu.
+trajnu bazu ni autentifikaciju. Izvršavanje je nepreemptivno: Round Robin kruži
+kroz čvorove pri smeštanju procesa i ne predstavlja CPU raspoređivanje po kvantu.
