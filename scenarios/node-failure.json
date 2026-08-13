@@ -10,11 +10,11 @@
     {"id": "node-3", "name": "Worker 3", "cpuCapacity": 2, "memoryCapacityMB": 2048}
   ],
   "processes": [
-    {"id": "p1", "name": "resilient-1", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 10, "timeQuantum": 2, "restartPolicy": "ON_FAILURE", "maxRestarts": 2},
-    {"id": "p2", "name": "resilient-2", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 12, "timeQuantum": 2, "restartPolicy": "ON_FAILURE", "maxRestarts": 2},
-    {"id": "p3", "name": "resilient-3", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 8, "timeQuantum": 2, "restartPolicy": "ON_FAILURE", "maxRestarts": 2},
-    {"id": "p4", "name": "resilient-4", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 9, "timeQuantum": 2, "restartPolicy": "ON_FAILURE", "maxRestarts": 2},
-    {"id": "p5", "name": "resilient-5", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 7, "timeQuantum": 2, "restartPolicy": "ON_FAILURE", "maxRestarts": 2}
+    {"id": "p1", "name": "resilient-1", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 10, "restartPolicy": "ON_FAILURE", "maxRestarts": 2},
+    {"id": "p2", "name": "resilient-2", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 12, "restartPolicy": "ON_FAILURE", "maxRestarts": 2},
+    {"id": "p3", "name": "resilient-3", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 8, "restartPolicy": "ON_FAILURE", "maxRestarts": 2},
+    {"id": "p4", "name": "resilient-4", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 9, "restartPolicy": "ON_FAILURE", "maxRestarts": 2},
+    {"id": "p5", "name": "resilient-5", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 7, "restartPolicy": "ON_FAILURE", "maxRestarts": 2}
   ],
   "failures": [
     {"tick": 4, "type": "NODE", "nodeId": "node-1", "message": "scheduled node outage"}
