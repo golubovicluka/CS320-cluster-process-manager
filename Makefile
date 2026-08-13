@@ -1,4 +1,4 @@
-.PHONY: build test race vet fmt fmt-check run simulate docker-build
+.PHONY: build test race vet fmt fmt-check run simulate results evidence docker-build
 
 build:
 	go build ./...
@@ -23,6 +23,12 @@ run:
 
 simulate:
 	go run ./cmd/simulator -scenario scenarios/balanced.json
+
+results:
+	./scripts/generate-experiment-results.sh
+
+evidence: fmt-check vet test race build results
+	EVIDENCE_CHECKS_PASSED=1 ./scripts/generate-evidence-manifest.sh
 
 docker-build:
 	docker build -t cluster-process-manager .
