@@ -3,6 +3,7 @@ package httptransport
 import (
 	"bytes"
 	"encoding/json"
+	"maps"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -105,5 +106,23 @@ func TestRejectsInvalidJSON(t *testing.T) {
 	handler.ServeHTTP(recorder, req)
 	if recorder.Code != http.StatusBadRequest {
 		t.Fatalf("status=%d body=%s", recorder.Code, recorder.Body.String())
+	}
+}
+
+func TestProcessContractRejectsRemovedQuantumAndAlwaysRestart(t *testing.T) {
+	handler := testHandler(t)
+	base := map[string]any{
+		"id": "p1", "name": "job", "cpuRequest": 1, "memoryRequestMB": 128,
+		"totalTicks": 2, "restartPolicy": "NEVER", "maxRestarts": 0,
+	}
+	withQuantum := maps.Clone(base)
+	withQuantum["timeQuantum"] = 2
+	if response := request(t, handler, http.MethodPost, "/api/v1/processes", withQuantum); response.Code != http.StatusBadRequest {
+		t.Fatalf("removed quantum: status=%d body=%s", response.Code, response.Body.String())
+	}
+	withAlways := maps.Clone(base)
+	withAlways["restartPolicy"] = "ALWAYS"
+	if response := request(t, handler, http.MethodPost, "/api/v1/processes", withAlways); response.Code != http.StatusBadRequest {
+		t.Fatalf("ALWAYS restart: status=%d body=%s", response.Code, response.Body.String())
 	}
 }
