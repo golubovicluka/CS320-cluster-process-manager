@@ -12,7 +12,9 @@ A deterministic Go simulator for process scheduling and failure recovery in a cl
 - thread-safe controller with invariant checks and race-tested concurrent access;
 - REST API, `clusterctl` client, and standalone scenario runner;
 - structured events and JSON/CSV metrics reports;
-- six checked-in experiment scenarios, Docker image, and GitHub Actions CI.
+- five checked-in experiment scenarios with seven reference runs, Docker image, and GitHub Actions CI.
+
+The execution model is non-preemptive. Once placed, a process keeps its simulated allocation until it completes, waits for I/O, is paused, is killed, or is affected by a failure. Round Robin refers to circular node placement, not CPU time slicing.
 
 ## Requirements
 
@@ -92,6 +94,8 @@ The controller serializes all mutations behind a mutex and gives schedulers immu
 
 Every scheduler checks both CPU and memory capacity and considers only `ONLINE` nodes.
 
+The only restart policies are `NEVER` and `ON_FAILURE`. Normal completion and a manual kill are final; `ON_FAILURE` retries only a failed attempt and never exceeds `maxRestarts`.
+
 ## REST API
 
 The API prefix is `/api/v1`; health is available at `GET /healthz`. Main resources are:
@@ -131,6 +135,8 @@ The multi-stage image contains only the static server binary and runs as a non-r
 
 Tests cover validation, legal state transitions, resource allocation/release, all schedulers, capacity deferral, pause/resume/kill, node and process failures, restart limits, heartbeat detection, deterministic replay, scenario validation, reports, API status codes, concurrent submissions, CLI behavior, and graceful real-time completion.
 
+Reports distinguish submitted, started, and never-started processes. Waiting time is published both for started processes and for all submitted processes observed up to the report tick. Once no future scenario action remains, a run stops early with `NO_ONLINE_CAPACITY` when no ready process fits an online node, or `EXTERNALLY_BLOCKED` when only waiting/paused work remains and an external command is required.
+
 The controller checks after each tick that:
 
 - allocations remain within capacity;
@@ -139,6 +145,8 @@ The controller checks after each tick that:
 - terminal and queued processes retain no node allocation.
 
 CI runs formatting, vet, unit/integration tests, the race detector, all binary builds, and a container build.
+
+`make evidence` first runs format, vet, test, race, and build checks, then regenerates the checked-in experiment rows and [`docs/results/evidence-manifest.json`](docs/results/evidence-manifest.json). The manifest records their successful completion together with the exact source digest, base Git commit, Go toolchain, scenario hashes, result hashes, and reproduction commands.
 
 ## Repository map
 
