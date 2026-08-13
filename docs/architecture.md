@@ -59,6 +59,8 @@ sequenceDiagram
 
 The order is deterministic: process IDs and node snapshots use stable sorting, and scenario events occur on explicit virtual ticks. The same scenario, scheduler, and seed therefore produce the same result.
 
+Before a tick mutates state, the controller deep-copies the process/node state and the pending scenario definitions. It stores only the previous event-log length because events are append-only during a locked tick. A failed tick restores the copied state and truncates newly appended events. The snapshot cost is therefore linear in live state and pending definitions, not in the full event history.
+
 ## Process lifecycle
 
 ```mermaid
@@ -86,6 +88,8 @@ stateDiagram-v2
 
 Only `RUNNING` processes consume resources. Leaving `RUNNING` releases the exact CPU and memory request and removes the process from the node list.
 
+Execution is non-preemptive. The `RUNNING` to `READY` transition is used after a permitted failure restart, not after a time slice. `NEVER` and `ON_FAILURE` are the complete restart-policy set for finite jobs.
+
 ## Node failure recovery
 
 ```mermaid
@@ -112,6 +116,8 @@ After every tick:
 5. every node process ID exists in the process registry.
 
 Failures are returned before a partially invalid command can corrupt an existing state. Snapshot consumers cannot mutate live objects because maps, slices, pointers, nodes, and processes are copied.
+
+With no future submissions, scheduled failures, or running process, the controller classifies a ready queue that cannot fit any `ONLINE` node as `NO_ONLINE_CAPACITY`. If only `WAITING` or `PAUSED` work remains, it reports `EXTERNALLY_BLOCKED` because a `wake` or `resume` command is required.
 
 ## Concurrency and shutdown
 
