@@ -27,7 +27,9 @@ func TestBuildReport(t *testing.T) {
 	}
 
 	report := Build(cluster)
-	if report.TerminatedProcesses != 1 || report.Restarts != 1 || report.AverageWaitingTicks != 2 || report.AverageTurnaroundTicks != 7 {
+	if report.SubmittedProcesses != 1 || report.StartedProcesses != 1 || report.NeverStartedProcesses != 0 ||
+		report.TerminatedProcesses != 1 || report.Restarts != 1 || report.AverageWaitingTicksStarted != 2 ||
+		report.AverageWaitingTicksAllSubmitted != 2 || report.AverageTurnaroundTicks != 7 {
 		t.Fatalf("unexpected process metrics: %+v", report)
 	}
 	if report.ThroughputPerTick != 0.1 || report.SuccessRate != 1 || report.AverageCPUUtilization != 0.3 || report.CurrentCPUUtilization != 0.5 || report.LoadBalanceStdDev != 0.1 {
@@ -35,8 +37,31 @@ func TestBuildReport(t *testing.T) {
 	}
 }
 
+func TestBuildReportIncludesNeverStartedProcessesInWaitingMetrics(t *testing.T) {
+	startedAt := int64(1)
+	finishedAt := int64(3)
+	cluster := domain.NewCluster("round-robin", 42)
+	cluster.CurrentTick = 5
+	cluster.Processes["started"] = &domain.Process{
+		ID: "started", State: domain.ProcessTerminated, SubmittedAtTick: 0, StartedAtTick: &startedAt,
+		FinishedAtTick: &finishedAt, WaitingTicks: 1,
+	}
+	cluster.Processes["never-started"] = &domain.Process{
+		ID: "never-started", State: domain.ProcessReady, SubmittedAtTick: 0, LastReadyAtTick: 0,
+	}
+
+	report := Build(cluster)
+	if report.SubmittedProcesses != 2 || report.StartedProcesses != 1 || report.NeverStartedProcesses != 1 {
+		t.Fatalf("unexpected process counts: %+v", report)
+	}
+	if report.AverageWaitingTicksStarted != 1 || report.AverageWaitingTicksAllSubmitted != 3 ||
+		report.MaximumWaitingTicksStarted != 1 || report.MaximumWaitingTicksAllSubmitted != 5 {
+		t.Fatalf("unexpected waiting metrics: %+v", report)
+	}
+}
+
 func TestExports(t *testing.T) {
-	report := Report{ScenarioName: "test", Scheduler: "round-robin", ProcessCount: 2, TerminatedProcesses: 2}
+	report := Report{ScenarioName: "test", Scheduler: "round-robin", SubmittedProcesses: 2, TerminatedProcesses: 2}
 	var jsonOutput bytes.Buffer
 	if err := WriteJSON(&jsonOutput, report); err != nil {
 		t.Fatal(err)
