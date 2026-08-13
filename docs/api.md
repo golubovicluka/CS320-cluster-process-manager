@@ -40,10 +40,11 @@ curl -X POST http://localhost:8080/api/v1/nodes \
 ```bash
 curl -X POST http://localhost:8080/api/v1/processes \
   -H 'Content-Type: application/json' \
-  -d '{"id":"p1","name":"image-worker","priority":10,"cpuRequest":2,"memoryRequestMB":512,"totalTicks":20,"timeQuantum":3,"restartPolicy":"ON_FAILURE","maxRestarts":2}'
+  -d '{"id":"p1","name":"image-worker","priority":10,"cpuRequest":2,"memoryRequestMB":512,"totalTicks":20,"restartPolicy":"ON_FAILURE","maxRestarts":2}'
 ```
 
 Larger numeric priority values run first. Priority aging adds one effective priority point per five ticks spent in `READY`.
+The execution model is non-preemptive, so `timeQuantum` is not accepted. `restartPolicy` accepts only `NEVER` and `ON_FAILURE`; neither normal completion nor a manual kill triggers a restart.
 
 ## Simulation and scheduler
 
@@ -71,4 +72,4 @@ Loading a scenario does not automatically run it. Use `step` or `start` afterwar
 | `GET` | `/reports/export?format=csv` | Download CSV report |
 | `GET` | `/healthz` | Service health (outside `/api/v1`) |
 
-Metrics include process state counts, restarts, waiting/turnaround time, throughput, success rate, CPU/memory utilization, deferrals, failures, reschedulings, tick count, and finish reason.
+Metrics include submitted, started, and never-started counts; separate paused and waiting counts; waiting time for started processes and all submitted processes; turnaround time, throughput, success rate, CPU/memory utilization, deferrals, failures, reschedulings, tick count, and finish reason.
