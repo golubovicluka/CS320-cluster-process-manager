@@ -15,6 +15,7 @@ func TestNewProcessValidation(t *testing.T) {
 		{name: "zero memory", def: ProcessDefinition{ID: "p1", Name: "worker", CPURequest: 1, TotalTicks: 1}},
 		{name: "zero duration", def: ProcessDefinition{ID: "p1", Name: "worker", CPURequest: 1, MemoryRequestMB: 64}},
 		{name: "invalid policy", def: ProcessDefinition{ID: "p1", Name: "worker", CPURequest: 1, MemoryRequestMB: 64, TotalTicks: 1, RestartPolicy: "SOMETIMES"}},
+		{name: "unsupported service policy", def: ProcessDefinition{ID: "p1", Name: "worker", CPURequest: 1, MemoryRequestMB: 64, TotalTicks: 1, RestartPolicy: "ALWAYS"}},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
