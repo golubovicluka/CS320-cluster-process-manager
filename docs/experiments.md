@@ -7,10 +7,11 @@ go run ./cmd/simulator -scenario scenarios/<name>.json -format json
 ```
 
 The full machine-readable rows are in [`results/summary.csv`](results/summary.csv) and [`results/summary.json`](results/summary.json).
+[`results/evidence-manifest.json`](results/evidence-manifest.json) binds those rows to the exact source digest, base Git commit, scenario, result, and toolchain hashes. `make evidence` writes it only after format, vet, test, race, and build checks pass.
 
 ## Results
 
-| Workload | Scheduler | Ticks | Avg wait | Max wait | Throughput | Avg CPU | Load σ | Deferrals | Restarts | Success |
+| Workload | Scheduler | Ticks | Avg wait (started) | Max wait (started) | Throughput | Avg CPU | Load σ | Deferrals | Restarts | Success |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Balanced | Round Robin | 9 | 1.00 | 1 | 1.333 | 52.22% | 0.1393 | 0 | 0 | 100% |
 | Balanced | Least Loaded | 9 | 1.00 | 1 | 1.333 | 52.22% | 0.0987 | 0 | 0 | 100% |
@@ -23,7 +24,7 @@ The full machine-readable rows are in [`results/summary.csv`](results/summary.cs
 ```mermaid
 xychart-beta
     title "Scenario completion time"
-    x-axis ["Bal RR", "Bal LL", "Het RR", "Het LL", "Overload", "Priority", "Failure"]
+    x-axis ["Balanced RR", "Balanced LL", "Hetero RR", "Hetero LL", "Overload", "Priority", "Failure"]
     y-axis "Ticks" 0 --> 40
     bar [9, 9, 22, 22, 39, 14, 16]
 ```
@@ -31,7 +32,7 @@ xychart-beta
 ```mermaid
 xychart-beta
     title "Average waiting time"
-    x-axis ["Bal RR", "Bal LL", "Het RR", "Het LL", "Overload", "Priority", "Failure"]
+    x-axis ["Balanced RR", "Balanced LL", "Hetero RR", "Hetero LL", "Overload", "Priority", "Failure"]
     y-axis "Ticks" 0 --> 12
     bar [1, 1, 3, 3, 11.25, 3.43, 1.8]
 ```
@@ -39,6 +40,8 @@ xychart-beta
 ## Interpretation
 
 The homogeneous balanced workload is intentionally a control case. Both schedulers finish in nine ticks with identical waiting time and throughput, but Least Loaded lowers the average cross-node load standard deviation from `0.1393` to `0.0987` (about 29%). This shows its balancing effect even when completion time is unchanged.
+
+Every process starts in these seven baseline runs, so `averageWaitingTicksStarted` and `averageWaitingTicksAllSubmitted` have the same value. Runs that stop with unschedulable work also expose `neverStartedProcesses`; their all-submitted waiting metric includes observed ready time instead of hiding those processes.
 
 The heterogeneous fixture also finishes identically for this fixed process order. Capacity checks prevent either scheduler from placing the largest jobs on undersized nodes; the very similar load deviation shows that admission constraints dominate the placement heuristic in this workload. New distributions can be compared without changing implementation by passing `-scheduler` to the runner.
 
