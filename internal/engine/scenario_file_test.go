@@ -14,6 +14,13 @@ func TestDecodeScenarioRejectsUnknownFields(t *testing.T) {
 	}
 }
 
+func TestDecodeScenarioRejectsRemovedTimeQuantum(t *testing.T) {
+	input := `{"name":"test","seed":1,"scheduler":"round-robin","maxTicks":1,"nodes":[{"id":"n1","name":"n","cpuCapacity":1,"memoryCapacityMB":1}],"processes":[{"id":"p1","name":"p","cpuRequest":1,"memoryRequestMB":1,"totalTicks":1,"timeQuantum":2}]}`
+	if _, err := DecodeScenario(strings.NewReader(input)); err == nil || !strings.Contains(err.Error(), "unknown field") {
+		t.Fatalf("expected removed timeQuantum to be rejected, got %v", err)
+	}
+}
+
 func TestRepositoryScenariosAreValid(t *testing.T) {
 	paths, err := filepath.Glob(filepath.Join("..", "..", "scenarios", "*.json"))
 	if err != nil {
