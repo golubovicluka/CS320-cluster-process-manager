@@ -22,7 +22,6 @@ type RestartPolicy string
 const (
 	RestartNever     RestartPolicy = "NEVER"
 	RestartOnFailure RestartPolicy = "ON_FAILURE"
-	RestartAlways    RestartPolicy = "ALWAYS"
 )
 
 type NodeStatus string
@@ -56,7 +55,6 @@ const (
 	EventProcessSubmitted    EventType = "PROCESS_SUBMITTED"
 	EventProcessScheduled    EventType = "PROCESS_SCHEDULED"
 	EventProcessStarted      EventType = "PROCESS_STARTED"
-	EventProcessPreempted    EventType = "PROCESS_PREEMPTED"
 	EventProcessPaused       EventType = "PROCESS_PAUSED"
 	EventProcessResumed      EventType = "PROCESS_RESUMED"
 	EventProcessWaiting      EventType = "PROCESS_WAITING"
