@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-13T09:19:00Z",
+  "source": {
+    "baseGitCommit": "20cc99f205f913db825be9cb6dfcffad78e46af5",
+    "aggregateSha256": "6676725e0bf7f43b94d7d686f6cd7c976556d4a845ad00cd73bb48412f7e9e74"
+  },
+  "toolchain": {"goVersion": "go version go1.26.2 darwin/arm64"},
+  "commands": [
+    "make fmt-check",
+    "make vet",
+    "make test",
+    "make race",
+    "make build",
+    "make evidence"
+  ],
+  "checks": {
+    "format": "passed",
+    "vet": "passed",
+    "tests": "passed",
+    "race": "passed",
+    "build": "passed"
+  },
+  "scenarioSha256": {
+    "scenarios/balanced.json": "72730ddc78d8ff9639ba4faae9c61dbdfd4da8c45253d3f7e3f659d54a8e5798",
+    "scenarios/heterogeneous.json": "34a75e1aec3d7d34df36b3396d990cef9488c17a8969ffeb9fb7a5fcaf77fd4f",
+    "scenarios/node-failure.json": "bb0c79855b467c43dd66a67533b2090d5d330b24a16bcfe916f59823f402f267",
+    "scenarios/overload.json": "0184ab82e18adbe5b408591fe32fa93c7abd6dd36cf142d22492b3376a7576c3",
+    "scenarios/priority-workload.json": "d890623f153e1453bb7257207c7f3a71858598d023a374cfbec294438db0c59a"
+  },
+  "resultSha256": {
+    "docs/results/summary.csv": "272a6d51a52ec473a1669c5ea36c2f5caf027c8e5608cc8ca35360a9f1a589db",
+    "docs/results/summary.json": "3f2f3fda24e132cd04ef5cd10e7954909370c377aebf698adb3b4e548887e418"
+  }
+}
