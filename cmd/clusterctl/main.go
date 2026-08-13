@@ -119,7 +119,6 @@ func (c *client) process(action string, args []string) error {
 		memory := flags.Int("memory", 0, "memory request in MB")
 		ticks := flags.Int("ticks", 0, "duration in ticks")
 		priority := flags.Int("priority", 0, "priority; larger values run first")
-		quantum := flags.Int("quantum", 1, "time quantum")
 		restart := flags.String("restart", "NEVER", "NEVER or ON_FAILURE")
 		maxRestarts := flags.Int("max-restarts", 0, "maximum restarts")
 		if err := flags.Parse(args); err != nil {
@@ -130,7 +129,7 @@ func (c *client) process(action string, args []string) error {
 		}
 		return c.request(http.MethodPost, "/api/v1/processes", map[string]any{
 			"id": *id, "name": *name, "cpuRequest": *cpu, "memoryRequestMB": *memory,
-			"totalTicks": *ticks, "priority": *priority, "timeQuantum": *quantum,
+			"totalTicks": *ticks, "priority": *priority,
 			"restartPolicy": strings.ToUpper(*restart), "maxRestarts": *maxRestarts,
 		}, "")
 	case "list":
