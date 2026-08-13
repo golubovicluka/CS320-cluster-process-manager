@@ -1,8 +1,8 @@
-scenario,seed,scheduler,nodes,processes,terminated,failed,killed,restarts,average_waiting_ticks,maximum_waiting_ticks,average_turnaround_ticks,throughput_per_tick,success_rate,average_cpu_utilization,average_memory_utilization,load_balance_stddev,scheduling_deferrals,node_failures,reschedulings,total_ticks,finish_reason
-balanced-round-robin,42,round-robin,5,12,12,0,0,0,1.000000,1,6.166667,1.333333,1.000000,0.522222,0.144444,0.139306,0,0,0,9,all processes reached a terminal state
-balanced-least-loaded,42,least-loaded,5,12,12,0,0,0,1.000000,1,6.166667,1.333333,1.000000,0.522222,0.144444,0.098720,0,0,0,9,all processes reached a terminal state
-heterogeneous-nodes,42,round-robin,3,6,6,0,0,0,3.000000,13,10.333333,0.272727,1.000000,0.496753,0.390734,0.241708,12,0,0,22,all processes reached a terminal state
-heterogeneous-nodes,42,least-loaded,3,6,6,0,0,0,3.000000,13,10.333333,0.272727,1.000000,0.496753,0.390734,0.245190,12,0,0,22,all processes reached a terminal state
-overloaded-cluster,42,least-loaded,2,8,8,0,0,0,11.250000,31,23.875000,0.205128,1.000000,0.891026,0.794872,0.096154,82,0,0,39,all processes reached a terminal state
-priority-workload,42,priority-aware,2,7,7,0,0,0,3.428571,11,8.142857,0.500000,1.000000,0.750000,0.245536,0.046875,18,0,0,14,all processes reached a terminal state
-node-failure-recovery,42,least-loaded,3,5,5,0,0,2,1.800000,5,11.200000,0.312500,1.000000,0.541667,0.187500,0.236836,4,1,2,16,all processes reached a terminal state
+scenario,seed,scheduler,nodes,submitted_processes,started_processes,never_started_processes,terminated,failed,killed,restarts,average_waiting_ticks_started,average_waiting_ticks_all_submitted,maximum_waiting_ticks_started,maximum_waiting_ticks_all_submitted,average_turnaround_ticks,throughput_per_tick,success_rate,average_cpu_utilization,average_memory_utilization,load_balance_stddev,scheduling_deferrals,node_failures,reschedulings,total_ticks,finish_reason
+balanced-workload,42,round-robin,5,12,12,0,12,0,0,0,1.000000,1.000000,1,1,6.166667,1.333333,1.000000,0.522222,0.144444,0.139306,0,0,0,9,all processes reached a terminal state
+balanced-workload,42,least-loaded,5,12,12,0,12,0,0,0,1.000000,1.000000,1,1,6.166667,1.333333,1.000000,0.522222,0.144444,0.098720,0,0,0,9,all processes reached a terminal state
+heterogeneous-nodes,42,round-robin,3,6,6,0,6,0,0,0,3.000000,3.000000,13,13,10.333333,0.272727,1.000000,0.496753,0.390734,0.241708,12,0,0,22,all processes reached a terminal state
+heterogeneous-nodes,42,least-loaded,3,6,6,0,6,0,0,0,3.000000,3.000000,13,13,10.333333,0.272727,1.000000,0.496753,0.390734,0.245190,12,0,0,22,all processes reached a terminal state
+overloaded-cluster,42,least-loaded,2,8,8,0,8,0,0,0,11.250000,11.250000,31,31,23.875000,0.205128,1.000000,0.891026,0.794872,0.096154,82,0,0,39,all processes reached a terminal state
+priority-workload,42,priority-aware,2,7,7,0,7,0,0,0,3.428571,3.428571,11,11,8.142857,0.500000,1.000000,0.750000,0.245536,0.046875,18,0,0,14,all processes reached a terminal state
+node-failure-recovery,42,least-loaded,3,5,5,0,5,0,0,2,1.800000,1.800000,5,5,11.200000,0.312500,1.000000,0.541667,0.187500,0.236836,4,1,2,16,all processes reached a terminal state
