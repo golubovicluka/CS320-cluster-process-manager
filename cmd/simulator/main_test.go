@@ -19,7 +19,8 @@ func TestRunScenarioCommand(t *testing.T) {
 	if err := json.Unmarshal(output.Bytes(), &report); err != nil {
 		t.Fatal(err)
 	}
-	if report.ProcessCount != 12 || report.TerminatedProcesses != 12 || report.Scheduler != "round-robin" {
+	if report.SubmittedProcesses != 12 || report.StartedProcesses != 12 || report.NeverStartedProcesses != 0 ||
+		report.TerminatedProcesses != 12 || report.Scheduler != "round-robin" {
 		t.Fatalf("unexpected report: %+v", report)
 	}
 }
