@@ -1,5 +1,5 @@
 {
-  "name": "balanced-round-robin",
+  "name": "balanced-workload",
   "seed": 42,
   "scheduler": "round-robin",
   "tickDurationMs": 100,
@@ -12,17 +12,17 @@
     {"id": "node-5", "name": "Worker 5", "cpuCapacity": 4, "memoryCapacityMB": 4096}
   ],
   "processes": [
-    {"id": "p01", "name": "job-01", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 5, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "p02", "name": "job-02", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 6, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "p03", "name": "job-03", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 512, "totalTicks": 4, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "p04", "name": "job-04", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 8, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "p05", "name": "job-05", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 256, "totalTicks": 7, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "p06", "name": "job-06", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 5, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "p07", "name": "job-07", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 9, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "p08", "name": "job-08", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 512, "totalTicks": 4, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "p09", "name": "job-09", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 6, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "p10", "name": "job-10", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 7, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "p11", "name": "job-11", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 512, "totalTicks": 5, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0},
-    {"id": "p12", "name": "job-12", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 8, "timeQuantum": 2, "restartPolicy": "NEVER", "maxRestarts": 0}
+    {"id": "p01", "name": "job-01", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 5, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p02", "name": "job-02", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 6, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p03", "name": "job-03", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 512, "totalTicks": 4, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p04", "name": "job-04", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 8, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p05", "name": "job-05", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 256, "totalTicks": 7, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p06", "name": "job-06", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 5, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p07", "name": "job-07", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 512, "totalTicks": 9, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p08", "name": "job-08", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 512, "totalTicks": 4, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p09", "name": "job-09", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 6, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p10", "name": "job-10", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 7, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p11", "name": "job-11", "priority": 5, "cpuRequest": 2, "memoryRequestMB": 512, "totalTicks": 5, "restartPolicy": "NEVER", "maxRestarts": 0},
+    {"id": "p12", "name": "job-12", "priority": 5, "cpuRequest": 1, "memoryRequestMB": 256, "totalTicks": 8, "restartPolicy": "NEVER", "maxRestarts": 0}
   ]
 }
