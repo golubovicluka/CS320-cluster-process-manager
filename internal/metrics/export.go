@@ -17,8 +17,10 @@ func WriteJSON(w io.Writer, report Report) error {
 func WriteCSV(w io.Writer, report Report) error {
 	writer := csv.NewWriter(w)
 	header := []string{
-		"scenario", "seed", "scheduler", "nodes", "processes", "terminated", "failed", "killed",
-		"restarts", "average_waiting_ticks", "maximum_waiting_ticks", "average_turnaround_ticks",
+		"scenario", "seed", "scheduler", "nodes", "submitted_processes", "started_processes", "never_started_processes",
+		"terminated", "failed", "killed", "restarts", "average_waiting_ticks_started",
+		"average_waiting_ticks_all_submitted", "maximum_waiting_ticks_started",
+		"maximum_waiting_ticks_all_submitted", "average_turnaround_ticks",
 		"throughput_per_tick", "success_rate", "average_cpu_utilization", "average_memory_utilization",
 		"load_balance_stddev", "scheduling_deferrals", "node_failures", "reschedulings", "total_ticks", "finish_reason",
 	}
@@ -27,13 +29,17 @@ func WriteCSV(w io.Writer, report Report) error {
 		strconv.FormatInt(report.Seed, 10),
 		report.Scheduler,
 		strconv.Itoa(report.NodeCount),
-		strconv.Itoa(report.ProcessCount),
+		strconv.Itoa(report.SubmittedProcesses),
+		strconv.Itoa(report.StartedProcesses),
+		strconv.Itoa(report.NeverStartedProcesses),
 		strconv.Itoa(report.TerminatedProcesses),
 		strconv.Itoa(report.FailedProcesses),
 		strconv.Itoa(report.KilledProcesses),
 		strconv.Itoa(report.Restarts),
-		formatFloat(report.AverageWaitingTicks),
-		strconv.FormatInt(report.MaximumWaitingTicks, 10),
+		formatFloat(report.AverageWaitingTicksStarted),
+		formatFloat(report.AverageWaitingTicksAllSubmitted),
+		strconv.FormatInt(report.MaximumWaitingTicksStarted, 10),
+		strconv.FormatInt(report.MaximumWaitingTicksAllSubmitted, 10),
 		formatFloat(report.AverageTurnaroundTicks),
 		formatFloat(report.ThroughputPerTick),
 		formatFloat(report.SuccessRate),
