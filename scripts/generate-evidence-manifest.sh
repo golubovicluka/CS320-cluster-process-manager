@@ -12,7 +12,21 @@ fi
 
 cd "$project_root"
 
-git_commit=$(git rev-parse HEAD)
+if [[ -n ${SOURCE_COMMIT:-} ]]; then
+  git_commit=$SOURCE_COMMIT
+elif [[ -f SOURCE_COMMIT.txt ]]; then
+  git_commit=$(tr -d '[:space:]' < SOURCE_COMMIT.txt)
+else
+  git_commit=$(git rev-parse HEAD 2>/dev/null) || {
+    printf 'set SOURCE_COMMIT or provide SOURCE_COMMIT.txt when .git is unavailable\n' >&2
+    exit 1
+  }
+fi
+
+if [[ ! $git_commit =~ ^[0-9a-f]{40}$ ]]; then
+  printf 'source commit must be a full 40-character lowercase Git SHA\n' >&2
+  exit 1
+fi
 
 source_sha=$(
   {

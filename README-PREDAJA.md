@@ -9,6 +9,7 @@
 - Implementacija: Go 1.26
 - Repozitorijum: <https://github.com/golubovicluka/CS320-cluster-process-manager>
 - Identitet izvornog koda i rezultata: `docs/results/evidence-manifest.json`
+- Commit izvornog izdanja: `SOURCE_COMMIT.txt`
 
 ## Šta je implementirano
 
@@ -35,6 +36,10 @@ make test
 make race
 make build
 ```
+
+Komanda `make evidence` ponavlja ove provere, regeneriše rezultate i pravi
+manifest reproduktivnosti. U predajnom paketu čita commit iz fajla
+`SOURCE_COMMIT.txt`, jer arhiva namerno ne sadrži `.git` direktorijum.
 
 ## Brza demonstracija
 
