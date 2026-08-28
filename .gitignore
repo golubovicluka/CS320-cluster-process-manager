@@ -1,0 +1,23 @@
+# Local-only project instructions
+AGENTS.md
+prd.md
+RTK.md
+
+# Editor and operating-system files
+.DS_Store
+.idea/
+.vscode/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Go build and test artifacts
+bin/
+coverage.out
+*.prof
+*.test
+
+# Generated simulation output
+reports/
