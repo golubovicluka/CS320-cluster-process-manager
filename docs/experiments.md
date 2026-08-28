@@ -6,9 +6,6 @@ All baseline runs use seed `42` and the deterministic engine. Results were gener
 go run ./cmd/simulator -scenario scenarios/<name>.json -format json
 ```
 
-The full machine-readable rows are in [`results/summary.csv`](results/summary.csv) and [`results/summary.json`](results/summary.json).
-[`results/evidence-manifest.json`](results/evidence-manifest.json) binds those rows to the exact source digest, base Git commit, scenario, result, and toolchain hashes. `make evidence` writes it only after format, vet, test, race, and build checks pass.
-
 ## Results
 
 | Workload | Scheduler | Ticks | Avg wait (started) | Max wait (started) | Throughput | Avg CPU | Load σ | Deferrals | Restarts | Success |
