@@ -146,12 +146,6 @@ The controller checks after each tick that:
 
 CI runs formatting, vet, unit/integration tests, the race detector, all binary builds, and a container build.
 
-`make evidence` first runs format, vet, test, race, and build checks, then regenerates the checked-in experiment rows and [`docs/results/evidence-manifest.json`](docs/results/evidence-manifest.json). The manifest records their successful completion together with the exact source digest, base Git commit, Go toolchain, scenario hashes, result hashes, and reproduction commands.
-
-The generator reads the commit from Git when `.git` metadata is available. Inside the
-submission archive it uses the checked-in `SOURCE_COMMIT.txt`; the same value can be
-provided explicitly through `SOURCE_COMMIT`.
-
 ## Repository map
 
 ```text
